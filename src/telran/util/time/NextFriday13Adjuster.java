@@ -11,7 +11,7 @@ public class NextFriday13Adjuster implements TemporalAdjuster {
 
 	@Override
 	public Temporal adjustInto(Temporal temporal) {
-		temporal = temporal.with(TemporalAdjusters.nextOrSame(DayOfWeek.FRIDAY));
+		temporal = temporal.with(TemporalAdjusters.next(DayOfWeek.FRIDAY));
 		while (!isFriday13(temporal)) {
 			temporal = temporal.plus(1, ChronoUnit.WEEKS);
 		}
