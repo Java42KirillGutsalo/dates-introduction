@@ -11,13 +11,17 @@ public class NextFriday13Adjuster implements TemporalAdjuster {
 
 	@Override
 	public Temporal adjustInto(Temporal temporal) {
-		Temporal ld;
-		do {
-			ld = temporal.with(TemporalAdjusters.next(DayOfWeek.FRIDAY));
-			ld = ld.plus(1, ChronoUnit.WEEKS);
-		} while (ld == LocalDate.of(2022, 5, 13));
+		temporal = temporal.with(TemporalAdjusters.nextOrSame(DayOfWeek.FRIDAY));
+		while (!isFriday13(temporal)) {
+			temporal = temporal.plus(1, ChronoUnit.WEEKS);
+		}
+		return temporal;
+	}
+
+	private boolean isFriday13(Temporal temporal) {
 		
-		return ld;
+		return ((LocalDate) temporal).getDayOfMonth() == 13 && 
+				((LocalDate) temporal).getDayOfWeek() == DayOfWeek.FRIDAY;
 	}
 
 }
