@@ -1,7 +1,7 @@
 package telran.util.time;
 
 import java.time.DayOfWeek;
-import java.time.LocalDate;
+import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.time.temporal.TemporalAdjuster;
@@ -20,8 +20,8 @@ public class NextFriday13Adjuster implements TemporalAdjuster {
 
 	private boolean isFriday13(Temporal temporal) {
 		
-		return ((LocalDate) temporal).getDayOfMonth() == 13 && 
-				((LocalDate) temporal).getDayOfWeek() == DayOfWeek.FRIDAY;
+		return temporal.get(ChronoField.DAY_OF_MONTH) == 13 &&
+				DayOfWeek.from(temporal) == DayOfWeek.FRIDAY;
 	}
 
 }
