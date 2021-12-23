@@ -48,7 +48,7 @@ class DateTimeTests {
 		assertEquals(2020 - 1799, getAgeDate(birthAS, ld2));
 		assertEquals(2020 - 1799, getAgeDate(birthAS, ld3));
 	}
-
+	// V.R. OK
 	private int getAgeDate(LocalDate birthDate, LocalDate atDate) {
 		
 		return (int) ChronoUnit.YEARS.between(birthDate, atDate);
