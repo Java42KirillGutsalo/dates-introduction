@@ -20,8 +20,7 @@ public class NextFriday13Adjuster implements TemporalAdjuster {
 
 	private boolean isFriday13(Temporal temporal) {
 		
-		return temporal.get(ChronoField.DAY_OF_MONTH) == 13 &&
-				DayOfWeek.from(temporal) == DayOfWeek.FRIDAY;
+		return temporal.get(ChronoField.DAY_OF_MONTH) == 13;
 	}
 
 }
