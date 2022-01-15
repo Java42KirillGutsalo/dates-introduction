@@ -1,9 +1,8 @@
 package telran.application.dates;
 
-import java.time.DayOfWeek;
+import java.time.*;
 import java.time.format.TextStyle;
 import java.util.Locale;
-import java.time.*;
 
 public class PrintCalendar {
 private static final TextStyle WEEK_DAY_LENGTH = TextStyle.SHORT_STANDALONE;
@@ -21,6 +20,7 @@ private static Locale locale = Locale.forLanguageTag("en");
 //		int op1 = Integer.parseInt(args[0]);
 //		int op2 = Integer.parseInt(args[1]);
 //		System.out.println(op1 + op2);
+		int[] monthYear = null;
 		/*******************************************/
 		try {
 			//TODO Part for arguments processing
@@ -28,22 +28,78 @@ private static Locale locale = Locale.forLanguageTag("en");
 			//no arguments - current month, current year, MONDAY
 			//no year, no week day - current year, MONDAY
 			//no week day - MONDAY
+			monthYear = getMonthYear(args);
 			setDaysOfWeek(args);
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
+		} catch (RuntimeException e) {
+			e.printStackTrace();//functionality error
 		}
-		printCalendar(12, 2021);
+		catch (Exception e) {
+			System.out.println(e.getMessage());//wrong input data
+			return;
+		}
+		printCalendar(monthYear[0], monthYear[1]);
 	}
 
-	private static void setDaysOfWeek(String[] args) {
-		if (args.length > 2) {
-			//TODO reordering of static field daysOfWeek
-			//in the case of wrong week day exception should be thrown
-		} else {
-			daysOfWeek = DayOfWeek.values();
-			//daysOfWeek = new DayOfWeek[] {DayOfWeek.SUNDAY, DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY, DayOfWeek.SATURDAY};
+	private static int[] getMonthYear(String[] args) throws Exception{
+		LocalDate current = LocalDate.now();
+		int[] res = { current.getMonthValue(), current.getYear() };
+		if(args.length > 0) {
+			int month = getMonth(args[0]);
+			res[0] = month;
 		}
-		
+		if(args.length > 1) {
+			int year = getYear(args[1]);
+			res[1] = year;
+		}
+		return res;
+	}
+
+	private static int getYear(String yearStr) throws Exception {
+		int res = 0;
+		try {
+			res = Integer.parseInt(yearStr);
+		} catch (NumberFormatException e) {
+			throw new Exception("Year should be a number");
+		}
+		if(res < 0) {
+			throw new Exception("Year can't be negative");
+		}
+		return res;
+	}
+
+	private static int getMonth(String monthStr) throws Exception {
+		int res = 0;
+		try {
+			res = Integer.parseInt(monthStr);
+		} catch (NumberFormatException e) {
+			throw new Exception("Month should be a number");
+		}
+		if(res < 1 || res > 12) {
+			throw new Exception("Wrong month number, should be [1, 12]");
+		}
+		return res;
+	}
+
+	private static void setDaysOfWeek(String[] args) throws Exception {
+		DayOfWeek[] sourceDays = DayOfWeek.values();
+		int daysOnWeek = sourceDays.length;
+		DayOfWeek firstDay = null;
+		try {
+			firstDay = args.length > 2 ? DayOfWeek.valueOf(args[2].toUpperCase()) : sourceDays[0];
+		} catch (Exception e) {
+			throw new Exception("wrong name of week day" + args[2]);
+		}
+		if(firstDay == sourceDays[0]) {
+			daysOfWeek = sourceDays;
+		} else {
+			daysOfWeek = new DayOfWeek[daysOnWeek];
+			int dayNumber = firstDay.getValue();
+			for(int i = 0; i < daysOfWeek.length; i++) {
+				int ind = dayNumber <= daysOnWeek ? dayNumber : dayNumber - daysOnWeek;
+				daysOfWeek[i] = sourceDays[ind - 1];
+				dayNumber++;
+			}
+		}
 	}
 
 	private static void printCalendar(int month, int year) {
@@ -56,7 +112,6 @@ private static Locale locale = Locale.forLanguageTag("en");
 	private static void printDates(int month, int year) {
 		int firstColumn = getFirstColumn(month, year);
 		printOffset(firstColumn);
-		firstColumn++;
 		int days = getDaysNumber(month, year);
 		int columnWidth = getColumnWidth();
 		int line = 1;
@@ -68,9 +123,7 @@ private static Locale locale = Locale.forLanguageTag("en");
 			} else {
 				firstColumn++;
 			}
-			
 		}
-		
 	}
 
 	private static int getColumnWidth() {
